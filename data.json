@@ -1,7 +1,32 @@
-{
-    "pet":{
-        "name": "",
-        "type": "",
-        "licence": ""
-    }
-}
+[
+    {
+        "name":"venkat",
+        "mob": 9035351965,
+        "addresss": "bangalore",
+        "city": "bangalore"  ,
+        "skills": ["database", "java"]
+    },
+    {
+        "name":"venkat",
+        "pincode": 560035,
+        "addresss": "bangalore" 
+    },
+    {
+        "name":"venkat",
+        "mob": null,
+        "addresss": "bangalore",
+        "marks":[34, 45,67]
+    },
+    "id_15", {
+        "name": {
+             "first_name": "Emily",
+             "last_name": "Wharton"
+               },
+        "grade" : "7",
+        "hobbies": [
+                    {"Dance": {"Experience": 2, "Level":2}},           
+                    {"Music": {"Experience": 3, "Level":1}},
+                    {"Sports": {"Experience": 1, "Level":2}}
+                   ]     
+               }
+]

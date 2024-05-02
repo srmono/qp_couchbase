@@ -1,4 +1,3 @@
-                              
 ##              Performing_Conditional_Operations_in_Queries
 ###########  Construct_objects_and_arrays_using_construction_operators
 
@@ -37,7 +36,7 @@ SELECT  {
                "Science" : 60,
                "History" : 78
               }
-        }
+        } 
 
 SELECT  {
          "name" : {
@@ -68,7 +67,6 @@ SELECT  {
 
 SELECT * FROM `student-sample`;
 
-
 INSERT INTO `student-sample` (key, value)
  VALUES("id_10",
         {
@@ -96,7 +94,6 @@ INSERT INTO `student-sample` (key, value)
 RETURNING name.first_name, name.last_name;
 
 #Array construction
-
 
 SELECT  {
            "name": {
@@ -131,9 +128,9 @@ SELECT  {
                   },
          "grade" : "9",
          "hobbies": [
-                      {"Dance": {"Experience": 2, "Level": 2}},
-                      {"Music": {"Experience": 3, "Level": 1}},
-                      {"Sports": {"Experience": 1, "Level": 2}}
+                      {"Dance": {"Experience": 2, "`level`": 2}},
+                      {"Music": {"Experience": 3, "`level`": 1}},
+                      {"Sports": {"Experience": 1, "`level`": 2}}
                     ]     
         } 
 
@@ -189,9 +186,9 @@ INSERT INTO `student-sample` (key, value)
                   },
            "grade" : "7",
            "hobbies": [
-                       {"Dance": {"Experience": 2, "Level":2}},           
-                       {"Music": {"Experience": 3, "Level":1}},
-                       {"Sports": {"Experience": 1, "Level":2}}
+                       {"Dance": {"Experience": 2, "`level`":2}},           
+                       {"Music": {"Experience": 3, "`level`":1}},
+                       {"Sports": {"Experience": 1, "`level`":2}}
                       ]     
                   }
                  )
@@ -232,7 +229,7 @@ FROM `student-sample`;
 
 #########
 
-SELECT name, hobbies[1].Music.Experience, hobbies[1].Music.Level
+SELECT name, hobbies[1].Music.Experience, hobbies[1].Music.`level`
 FROM `student-sample`;
 
 ## Using array functions:
@@ -325,27 +322,27 @@ ELSE "no" END AS condition_satisfied
 
 ## Simple case expression
 
-SELECT level,
-       name, CASE (level >= 100) WHEN TRUE THEN "pro-player" ELSE "beginner" END AS tag
+SELECT `level`,
+       name, CASE (`level` >= 100) WHEN TRUE THEN "pro-player" ELSE "beginner" END AS tag
 FROM `gamesim-sample`
 
-SELECT level,
-       name, CASE level 
+SELECT `level`,
+       name, CASE `level` 
              WHEN 2 THEN "two" 
              WHEN 3 THEN "three" 
              WHEN 150 THEN "one-fifty"
-             ELSE "some other level"
+             ELSE "some other `level`"
              END AS tag
 FROM `gamesim-sample`;
 
-SELECT level,
+SELECT `level`,
        name,
        loggedIn,
        CASE TRUE WHEN loggedIn=TRUE THEN "active_player" ELSE "inactive_player" END AS tag
 FROM `gamesim-sample`
 WHERE jsonType="player";
 
-SELECT level,
+SELECT `level`,
        name,
        loggedIn,
        CASE FALSE WHEN loggedIn THEN "active_player" ELSE "inactive_player" END AS tag
@@ -362,10 +359,15 @@ FROM `gamesim-sample`;
 
 # searched case expression
 
+-- We want to project the value of the experience attributes of document only
+--  if the attribute is present, if not we want to tag with no - experience
+
 SELECT CASE WHEN `experience` IS NOT MISSING THEN `experience` ELSE "no-experience" END AS experience
 FROM `gamesim-sample`;
 
 
+-- For All player documents we want to project the value of loggedin and experience  
+-- by searched case expression
 SELECT name,
        experience,
        loggedIn,
@@ -373,16 +375,19 @@ SELECT name,
 FROM `gamesim-sample`
 WHERE jsonType="player";
 
-
+-- for Monster documents , in searched case expression, we evalute the value of hitpoints > 1000 
+-- other wise project the hitpoints as a below 1000
 SELECT name,
        jsonType,
        CASE WHEN `hitpoints` > 1000 THEN `hitpoints` ELSE "hitpoints below 1000" END AS hitpoints
 FROM `gamesim-sample`
 WHERE jsonType="monster";
 
-SELECT level,
-       name, CASE WHEN (level>=150) THEN "pro-player" 
-                  WHEN (level >= 100) THEN "intermediate"
+
+-- Similar to switch case, we can have multiple when clauses 
+SELECT `level`,
+       name, CASE WHEN (`level`>=150) THEN "pro-player" 
+                  WHEN (`level` >= 100) THEN "intermediate"
                   ELSE "beginner" END AS tag
 FROM `gamesim-sample`
 WHERE jsonType = "player";
@@ -391,10 +396,10 @@ WHERE jsonType = "player";
 #######
 
 SELECT name,
-       level,
-       CASE WHEN `level` > 100 AND `experience` > 10000 THEN "reached_higer_level" 
-            WHEN `level` BETWEEN 50 AND 100 THEN "reached_medium_level" 
-            ELSE "keep_playing" END AS level_status
+       `level`,
+       CASE WHEN ``level`` > 100 AND `experience` > 10000 THEN "reached_higer_`level`" 
+            WHEN ``level`` BETWEEN 50 AND 100 THEN "reached_medium_`level`" 
+            ELSE "keep_playing" END AS `level`_status
 FROM `gamesim-sample`
 WHERE jsonType="player";
 
@@ -404,10 +409,18 @@ WHERE jsonType="player";
 
 # Conditional Functions 
 #Conditional Functions for Unknowns
+# When we work with document database we commonly find many documents with missing fields. 
 
-# IFMISSING
+https://docs.couchbase.com/server/current/n1ql/n1ql-language-reference/condfunnum.html
+
+# IFMISSING (return the first non missing value)
+-- Note: sequence of values are important
 
 SELECT IFMISSING(missing, "Couchbase", 100); 
+
+-- The first value here is missing literal, but when we run this query returned value is couchbase, 
+-- first value in the sequence which is not missing
+-- Now instead of missing literal , if we replace with null in IFMISSING (null is considered as a non missing value)
 
 SELECT IFMISSING(null, "Couchbase", 100); #returns null
 
@@ -422,7 +435,7 @@ SELECT IFMISSING("Couchbase", missing),
        IFMISSING(missing, missing, missing) ;
       
 ######
-
+-- if marks missing, then null will be returned as the first non-missing values
 SELECT name, IFMISSING(marks, null) AS marks
 FROM `student-sample`;
 
@@ -430,9 +443,10 @@ SELECT IFMISSING(name, "No name given"), IFMISSING(marks, null) AS marks
 FROM `student-sample`;
 
 #######
+-- `IFNULL` handles cases where the field is exists but the value is null, 
+-- while `IFMISSING` HANDLES CASES WHERE THE FIELD IS ENTIRELY ABSENT FROM THE DOCUMENT. 
 
-
-# IFNULL
+# IFNULL (this will return first non-null value in the given sequence)
 
 SELECT IFNULL(null, "Couchbase");
 
@@ -481,10 +495,10 @@ SELECT IFNAN("Couchbase", 1),   #returns null because 1st number is not a number
  
 ########
 
-SELECT IFNAN(level, "no_level")
+SELECT IFNAN(`level`, "no_`level`")
 FROM `gamesim-sample`
 WHERE jsonType="player";
-## All levels are numbers
+## All `level`s are numbers
  
 ######## 
 
