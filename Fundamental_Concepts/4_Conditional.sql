@@ -4,7 +4,7 @@
 #Objects Construct 
 #Objects contain name value members
 
-SELECT { "Loonycorn" : 1} AS info 
+SELECT { "venkat" : 1} AS info 
 
 #######
 

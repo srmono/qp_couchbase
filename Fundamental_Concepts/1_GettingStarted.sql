@@ -257,8 +257,8 @@ cbq> \EXIT ;
 
 #or press Ctrl+D to exit
 
-## Run this on the terminal (replace loonycorn with your user name)
-cat  /Users/loonycorn/.cbq_history
+## Run this on the terminal (replace venkat with your user name)
+cat  /Users/venkat/.cbq_history
 
 
 
